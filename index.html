@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times Table Bingo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 3em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f9fafb;
+            border-radius: 15px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .times-table-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+
+        .table-option:hover {
+            background: #f3f4f6;
+            border-color: #667eea;
+        }
+
+        .table-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .table-option label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1em;
+        }
+
+        .quick-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .secondary-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .info-box strong {
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Times Table Bingo 🎲</h1>
+        <p class="subtitle">Generate custom bingo cards and run your game!</p>
+
+        <div class="section">
+            <h2>1️⃣ Select Times Tables</h2>
+            
+            <div class="quick-select">
+                <button class="quick-btn" onclick="selectRange(2, 5)">2-5 Times Tables</button>
+                <button class="quick-btn" onclick="selectRange(2, 10)">2-10 Times Tables</button>
+                <button class="quick-btn" onclick="selectRange(2, 12)">2-12 Times Tables</button>
+                <button class="quick-btn" onclick="selectAll()">Select All</button>
+                <button class="quick-btn" onclick="clearAll()">Clear All</button>
+            </div>
+
+            <div class="times-table-selector" id="tableSelector">
+                <!-- Generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2️⃣ Configure Game</h2>
+            
+            <div class="config-row">
+                <div class="config-label">Number of cards:</div>
+                <input type="number" id="numCards" value="30" min="1" max="50">
+            </div>
+
+            <div class="info-box">
+                <p><strong>How it works:</strong></p>
+                <p>• Each card gets 24 random answers from your selected times tables (5×5 grid with free center)</p>
+                <p>• Cards are strategically generated to give good chances of winning</p>
+                <p>• Common answers appear on more cards to keep games moving</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3️⃣ Generate & Play</h2>
+            
+            <div class="button-group">
+                <button class="action-btn primary-btn" onclick="generateCards()">📄 Generate Printable Cards</button>
+                <button class="action-btn secondary-btn" onclick="openCaller()">📢 Open Caller Display</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate times table selector
+        function initializeSelector() {
+            const selector = document.getElementById('tableSelector');
+            for (let i = 2; i <= 12; i++) {
+                const div = document.createElement('div');
+                div.className = 'table-option';
+                div.innerHTML = `
+                    <input type="checkbox" id="table${i}" value="${i}" checked>
+                    <label for="table${i}">${i} times</label>
+                `;
+                selector.appendChild(div);
+            }
+        }
+
+        function selectRange(start, end) {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = (i >= start && i <= end);
+            }
+        }
+
+        function selectAll() {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = true;
+            }
+        }
+
+        function clearAll() {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = false;
+            }
+        }
+
+        function getSelectedTables() {
+            const selected = [];
+            for (let i = 2; i <= 12; i++) {
+                if (document.getElementById(`table${i}`).checked) {
+                    selected.push(i);
+                }
+            }
+            return selected;
+        }
+
+        function generateAllProducts(tables) {
+            const products = new Set();
+            tables.forEach(table => {
+                for (let i = 2; i <= 12; i++) {
+                    products.add(table * i);
+                }
+            });
+            return Array.from(products).sort((a, b) => a - b);
+        }
+
+        function generateCards() {
+            const selectedTables = getSelectedTables();
+            if (selectedTables.length === 0) {
+                alert('Please select at least one times table!');
+                return;
+            }
+
+            const numCards = parseInt(document.getElementById('numCards').value);
+            const allProducts = generateAllProducts(selectedTables);
+            
+            // Store configuration for the caller
+            const config = {
+                tables: selectedTables,
+                products: allProducts,
+                numCards: numCards
+            };
+            localStorage.setItem('bingoConfig', JSON.stringify(config));
+            
+            // Generate cards and open in new window
+            const cardsWindow = window.open('', '_blank');
+            cardsWindow.document.write(generateCardsHTML(selectedTables, allProducts, numCards));
+            cardsWindow.document.close();
+        }
+
+        function generateCardsHTML(tables, allProducts, numCards) {
+            let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Times Table Bingo Cards</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            .bingo-card { page-break-inside: avoid; page-break-after: always; }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .no-print {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .print-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .print-btn:hover {
+            background: #764ba2;
+        }
+        
+        .bingo-card {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            border: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .card-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .card-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .card-number {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .bingo-cell {
+            aspect-ratio: 1;
+            border: 3px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: relative;
+        }
+        
+        .cell-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .cell-space {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            min-height: 20px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 2px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .free-space {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .free-space .cell-number {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button class="print-btn" onclick="window.print()">🖨️ Print All Cards</button>
+        <p style="margin-top: 10px; color: #666;">Generated ${numCards} cards with times tables: ${tables.join(', ')}</p>
+    </div>
+`;
+
+            // Generate each card
+            for (let cardNum = 1; cardNum <= numCards; cardNum++) {
+                html += generateSingleCard(cardNum, allProducts);
+            }
+
+            html += `
+</body>
+</html>`;
+            return html;
+        }
+
+        function generateSingleCard(cardNum, allProducts) {
+            // Select 24 random unique numbers for this card
+            const shuffled = [...allProducts].sort(() => Math.random() - 0.5);
+            const cardNumbers = shuffled.slice(0, 24);
+            
+            let html = `
+    <div class="bingo-card">
+        <div class="card-header">
+            <div class="card-title">BINGO</div>
+            <div class="card-number">Card #${cardNum}</div>
+        </div>
+        <div class="bingo-grid">
+`;
+            
+            // Generate 5x5 grid with free space in center
+            for (let i = 0; i < 25; i++) {
+                if (i === 12) { // Center cell - FREE
+                    html += `
+            <div class="bingo-cell free-space">
+                <div class="cell-number">FREE</div>
+            </div>`;
+                } else {
+                    const numIndex = i < 12 ? i : i - 1;
+                    const number = cardNumbers[numIndex];
+                    html += `
+            <div class="bingo-cell">
+                <div class="cell-number">${number}</div>
+                <div class="cell-space"></div>
+            </div>`;
+                }
+            }
+            
+            html += `
+        </div>
+        <div class="instructions">
+            Write the multiplication (e.g. "6×4") in the space below each number when called
+        </div>
+    </div>
+`;
+            return html;
+        }
+
+        function openCaller() {
+            const selectedTables = getSelectedTables();
+            if (selectedTables.length === 0) {
+                alert('Please select at least one times table!');
+                return;
+            }
+
+            const allProducts = generateAllProducts(selectedTables);
+            
+            // Store configuration
+            const config = {
+                tables: selectedTables,
+                products: allProducts
+            };
+            localStorage.setItem('bingoConfig', JSON.stringify(config));
+            
+            // Open caller in new window
+            window.open('caller.html', '_blank', 'width=1400,height=900');
+        }
+
+        // Initialize on load
+        initializeSelector();
+    </script>
+</body>
+</html>
