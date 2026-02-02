@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times Table Bingo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFB5E8 0%, #FFCCF9 20%, #FFF5BA 40%, #BFECFF 60%, #C4FAF8 80%, #E0BBE4 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Floating bubbles animation */
+        .bubble {
+            position: fixed;
+            bottom: -100px;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: float-up linear infinite;
+            pointer-events: none;
+            z-index: 0;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .bubble:nth-child(1) {
+            background: linear-gradient(135deg, #FFB5E8, #C4FAF8);
+        }
+        
+        .bubble:nth-child(2) {
+            background: linear-gradient(135deg, #FFF5BA, #FFD97D);
+        }
+        
+        .bubble:nth-child(3) {
+            background: linear-gradient(135deg, #BFECFF, #93C5FD);
+        }
+        
+        .bubble:nth-child(4) {
+            background: linear-gradient(135deg, #E0BBE4, #D4A5FF);
+        }
+        
+        .bubble:nth-child(5) {
+            background: linear-gradient(135deg, #FF9CEE, #FFCCF9);
+        }
+        
+        .bubble:nth-child(6) {
+            background: linear-gradient(135deg, #C4FAF8, #BFECFF);
+        }
+        
+        .bubble:nth-child(7) {
+            background: linear-gradient(135deg, #FFF5BA, #FFE5A3);
+        }
+        
+        .bubble:nth-child(8) {
+            background: linear-gradient(135deg, #D4A5FF, #E0BBE4);
+        }
+        
+        @keyframes float-up {
+            to {
+                transform: translateY(-110vh) translateX(20px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 8s; animation-delay: 0s; }
+        .bubble:nth-child(2) { width: 60px; height: 60px; left: 25%; animation-duration: 10s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 100px; height: 100px; left: 45%; animation-duration: 12s; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 70px; height: 70px; left: 65%; animation-duration: 9s; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 90px; height: 90px; left: 80%; animation-duration: 11s; animation-delay: 3s; }
+        .bubble:nth-child(6) { width: 75px; height: 75px; left: 35%; animation-duration: 13s; animation-delay: 5s; }
+        .bubble:nth-child(7) { width: 85px; height: 85px; left: 55%; animation-duration: 10s; animation-delay: 6s; }
+        .bubble:nth-child(8) { width: 65px; height: 65px; left: 15%; animation-duration: 14s; animation-delay: 2.5s; }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(228, 102, 242, 0.4), 0 0 100px rgba(147, 197, 253, 0.3);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 4px solid transparent;
+            background-image: 
+                linear-gradient(white, white),
+                linear-gradient(135deg, #FF9CEE, #FFF5BA, #93C5FD, #E0BBE4);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 3em;
+            font-weight: bold;
+        }
+        
+        h1::before {
+            content: '🎲 ';
+        }
+        
+        h1::after {
+            content: ' 🎲';
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #FF6EC7, #FF9CEE, #D4A5FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s ease infinite;
+        }
+        
+        h1::before, h1::after {
+            -webkit-text-fill-color: initial;
+            background: none;
+            -webkit-background-clip: initial;
+            background-clip: initial;
+        }
+        
+        @keyframes rainbow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 245, 186, 0.6) 0%, rgba(191, 236, 255, 0.6) 50%, rgba(255, 181, 232, 0.4) 100%);
+            border-radius: 20px;
+            border: 3px solid transparent;
+            background-image: 
+                linear-gradient(135deg, rgba(255, 245, 186, 0.6), rgba(191, 236, 255, 0.6), rgba(255, 181, 232, 0.4)),
+                linear-gradient(135deg, #FFD97D, #93C5FD, #FF9CEE);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(228, 102, 242, 0.3);
+        }
+
+        .section h2 {
+            background: linear-gradient(135deg, #FF6EC7, #D4A5FF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .times-table-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #BFECFF;
+        }
+
+        .table-option:hover {
+            background: linear-gradient(135deg, #FFF5BA 0%, #BFECFF 100%);
+            border-color: #D4A5FF;
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px rgba(212, 165, 255, 0.4);
+        }
+
+        .table-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .table-option label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1em;
+        }
+
+        .quick-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #93C5FD 0%, #D4A5FF 50%, #FF9CEE 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(228, 102, 242, 0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-btn:hover {
+            background: linear-gradient(135deg, #60A5FA 0%, #C084FC 50%, #FF6EC7 100%);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(228, 102, 242, 0.5);
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #FF6EC7 0%, #FF9CEE 50%, #FFB5E8 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 110, 199, 0.5);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 110, 199, 0.6);
+            background: linear-gradient(135deg, #FF4DBD 0%, #FF6EC7 50%, #FF9CEE 100%);
+        }
+
+        .secondary-btn {
+            background: linear-gradient(135deg, #FFD97D 0%, #FFF5BA 50%, #C4FAF8 100%);
+            color: #0F766E;
+            box-shadow: 0 6px 20px rgba(255, 217, 125, 0.5);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            font-weight: 700;
+        }
+
+        .secondary-btn:hover {
+            background: linear-gradient(135deg, #FFC759 0%, #FFE8A3 50%, #99F6E4 100%);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 217, 125, 0.6);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(224, 242, 254, 0.8) 0%, rgba(186, 230, 253, 0.5) 100%);
+            border-left: 5px solid #93C5FD;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .info-box p {
+            color: #1E3A8A;
+            margin-bottom: 8px;
+        }
+
+        .info-box strong {
+            color: #1E40AF;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    
+    <div class="container">
+        <h1>Times Table Bingo</h1>
+        <p class="subtitle">Generate custom bingo cards and run your game!</p>
+
+        <div class="section">
+            <h2>1️⃣ Select Times Tables</h2>
+            
+            <div class="quick-select">
+                <button class="quick-btn" onclick="selectRange(2, 5)">2-5 Times Tables</button>
+                <button class="quick-btn" onclick="selectRange(2, 10)">2-10 Times Tables</button>
+                <button class="quick-btn" onclick="selectRange(2, 12)">2-12 Times Tables</button>
+                <button class="quick-btn" onclick="selectAll()">Select All</button>
+                <button class="quick-btn" onclick="clearAll()">Clear All</button>
+            </div>
+
+            <div class="times-table-selector" id="tableSelector">
+                <!-- Generated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2️⃣ Configure Game</h2>
+            
+            <div class="config-row">
+                <div class="config-label">Number of cards:</div>
+                <input type="number" id="numCards" value="30" min="1" max="50">
+            </div>
+
+            <div class="info-box">
+                <p><strong>How it works:</strong></p>
+                <p>• Each card gets 24 random answers from your selected times tables (5×5 grid with free center)</p>
+                <p>• Cards are strategically generated to give good chances of winning</p>
+                <p>• Common answers appear on more cards to keep games moving</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3️⃣ Generate & Play</h2>
+            
+            <div class="button-group">
+                <button class="action-btn primary-btn" onclick="generateCards()">📄 Generate Printable Cards</button>
+                <button class="action-btn secondary-btn" onclick="openCaller()">📢 Open Caller Display</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate times table selector
+        function initializeSelector() {
+            const selector = document.getElementById('tableSelector');
+            for (let i = 2; i <= 12; i++) {
+                const div = document.createElement('div');
+                div.className = 'table-option';
+                div.innerHTML = `
+                    <input type="checkbox" id="table${i}" value="${i}" checked>
+                    <label for="table${i}">${i} times</label>
+                `;
+                selector.appendChild(div);
+            }
+        }
+
+        function selectRange(start, end) {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = (i >= start && i <= end);
+            }
+        }
+
+        function selectAll() {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = true;
+            }
+        }
+
+        function clearAll() {
+            for (let i = 2; i <= 12; i++) {
+                document.getElementById(`table${i}`).checked = false;
+            }
+        }
+
+        function getSelectedTables() {
+            const selected = [];
+            for (let i = 2; i <= 12; i++) {
+                if (document.getElementById(`table${i}`).checked) {
+                    selected.push(i);
+                }
+            }
+            return selected;
+        }
+
+        function generateAllProducts(tables) {
+            const products = new Set();
+            tables.forEach(table => {
+                for (let i = 2; i <= 12; i++) {
+                    products.add(table * i);
+                }
+            });
+            return Array.from(products).sort((a, b) => a - b);
+        }
+
+        function generateCards() {
+            const selectedTables = getSelectedTables();
+            if (selectedTables.length === 0) {
+                alert('Please select at least one times table!');
+                return;
+            }
+
+            const numCards = parseInt(document.getElementById('numCards').value);
+            const allProducts = generateAllProducts(selectedTables);
+            
+            // Store configuration for the caller
+            const config = {
+                tables: selectedTables,
+                products: allProducts,
+                numCards: numCards
+            };
+            localStorage.setItem('bingoConfig', JSON.stringify(config));
+            
+            // Generate cards and open in new window
+            const cardsWindow = window.open('', '_blank');
+            cardsWindow.document.write(generateCardsHTML(selectedTables, allProducts, numCards));
+            cardsWindow.document.close();
+        }
+
+        function generateCardsHTML(tables, allProducts, numCards) {
+            let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Times Table Bingo Cards</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            .bingo-card { page-break-inside: avoid; page-break-after: always; }
+            
+            /* Override gradients for print */
+            .cell-number {
+                background: none !important;
+                -webkit-background-clip: initial !important;
+                -webkit-text-fill-color: #333 !important;
+                background-clip: initial !important;
+                color: #333 !important;
+            }
+            
+            .card-title {
+                background: none !important;
+                -webkit-background-clip: initial !important;
+                -webkit-text-fill-color: #FF6EC7 !important;
+                background-clip: initial !important;
+                color: #FF6EC7 !important;
+            }
+            
+            .free-space .cell-number {
+                background: none !important;
+                -webkit-background-clip: initial !important;
+                -webkit-text-fill-color: #0F766E !important;
+                background-clip: initial !important;
+                color: #0F766E !important;
+            }
+            
+            /* Remove animations for print */
+            .free-space {
+                animation: none !important;
+            }
+            
+            .bingo-cell:hover {
+                transform: none !important;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .no-print {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .print-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #FF9A76 0%, #FFB199 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(255, 154, 118, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .print-btn:hover {
+            background: linear-gradient(135deg, #FF8C5F 0%, #FF9A76 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 154, 118, 0.4);
+        }
+        
+        .bingo-card {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            padding: 15px;
+            border-radius: 20px;
+            background: white;
+            border: 5px solid transparent;
+            background-image: 
+                linear-gradient(white, white),
+                linear-gradient(135deg, #FF6EC7, #FFD97D, #93C5FD, #D4A5FF);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+        
+        .card-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(90deg, #FF6EC7, #FFD97D, #93C5FD) 1;
+        }
+        
+        .card-title {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF6EC7, #D4A5FF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+        
+        .card-number {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .bingo-cell {
+            aspect-ratio: 1;
+            border: 3px solid #D4A5FF;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .bingo-cell:hover {
+            transform: scale(1.05);
+            border-color: #FF6EC7;
+        }
+        
+        .cell-number {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #D4A5FF, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cell-space {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            min-height: 20px;
+            border-top: 1px solid #E0BBE4;
+            padding-top: 2px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .free-space {
+            background: linear-gradient(135deg, #FFD97D 0%, #FFF5BA 50%, #C4FAF8 100%);
+            border: 3px solid #FFD97D;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 217, 125, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 217, 125, 0.6); }
+        }
+        
+        .free-space .cell-number {
+            background: linear-gradient(135deg, #0F766E, #14B8A6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 20px;
+            font-weight: 900;
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button class="print-btn" onclick="window.print()">🖨️ Print All Cards</button>
+        <p style="margin-top: 10px; color: #666;">Generated ${numCards} cards with times tables: ${tables.join(', ')}</p>
+    </div>
+`;
+
+            // Generate each card
+            for (let cardNum = 1; cardNum <= numCards; cardNum++) {
+                html += generateSingleCard(cardNum, allProducts);
+            }
+
+            html += `
+</body>
+</html>`;
+            return html;
+        }
+
+        function generateSingleCard(cardNum, allProducts) {
+            // Select 24 random unique numbers for this card
+            const shuffled = [...allProducts].sort(() => Math.random() - 0.5);
+            const cardNumbers = shuffled.slice(0, 24);
+            
+            let html = `
+    <div class="bingo-card">
+        <div class="card-header">
+            <div class="card-title">BINGO</div>
+            <div class="card-number">Card #${cardNum}</div>
+        </div>
+        <div class="bingo-grid">
+`;
+            
+            // Generate 5x5 grid with free space in center
+            for (let i = 0; i < 25; i++) {
+                if (i === 12) { // Center cell - FREE
+                    html += `
+            <div class="bingo-cell free-space">
+                <div class="cell-number">FREE</div>
+            </div>`;
+                } else {
+                    const numIndex = i < 12 ? i : i - 1;
+                    const number = cardNumbers[numIndex];
+                    html += `
+            <div class="bingo-cell">
+                <div class="cell-number">${number}</div>
+                <div class="cell-space"></div>
+            </div>`;
+                }
+            }
+            
+            html += `
+        </div>
+        <div class="instructions">
+            Write the multiplication (e.g. "6×4") in the space below each number when called
+        </div>
+    </div>
+`;
+            return html;
+        }
+
+        function openCaller() {
+            const selectedTables = getSelectedTables();
+            if (selectedTables.length === 0) {
+                alert('Please select at least one times table!');
+                return;
+            }
+
+            const allProducts = generateAllProducts(selectedTables);
+            
+            // Store configuration
+            const config = {
+                tables: selectedTables,
+                products: allProducts
+            };
+            localStorage.setItem('bingoConfig', JSON.stringify(config));
+            
+            // Open caller in new window
+            window.open('caller.html', '_blank', 'width=1400,height=900');
+        }
+
+        // Initialize on load
+        initializeSelector();
+    </script>
+</body>
+</html>
